@@ -204,15 +204,17 @@ public class Table
      * @param keyVal  the given key value
      * @return  a table with the tuple satisfying the key predicate
      */
-    public Table select (KeyType keyVal)
-    {
-        out.println ("RA> " + name + ".select (" + keyVal + ")");
-
-        List <Comparable []> rows = new ArrayList <> ();
-
-        //  T O   B E   I M P L E M E N T E D 
-
-        return new Table (name + count++, attribute, domain, key, rows);
+    public Table select(KeyType keyVal) {
+        out.println("RA> " + name + ".select (" + keyVal + ")");
+    
+        List<Comparable[]> rows = new ArrayList<>();
+        Comparable[] tuple = index.get(keyVal); // Use the index to fetch the tuple
+    
+        if (tuple != null) {
+            rows.add(tuple); // Add the tuple to the result if it exists
+        }
+    
+        return new Table(name + count++, attribute, domain, key, rows);
     } // select
 
     /************************************************************************************
@@ -270,15 +272,44 @@ public class Table
      * @param table2      the rhs table in the join operation
      * @return  a table with tuples satisfying the equality predicate
      */
-    public Table join (String attributes1, String attributes2, Table table2)
-    {
-        out.println ("RA> " + name + ".join (" + attributes1 + ", " + attributes2 + ", "
-                                               + table2.name + ")");
-        //  T O   B E   I M P L E M E N T E D 
-
-        return null;
-
+    public Table join(String attributes1, String attributes2, Table table2) {
+        out.println("RA> " + name + ".join (" + attributes1 + ", " + attributes2 + ", " + table2.name + ")");
+    
+        String[] t_attrs = attributes1.split(" ");
+        String[] u_attrs = attributes2.split(" ");
+        List<Comparable[]> rows = new ArrayList<>();
+    
+        if (t_attrs.length != u_attrs.length) {
+            System.out.println("Cannot Perform Join Operation: Attribute count mismatch");
+            return null;
+        }
+    
+        // Build an index on table2 if it doesn't have one
+        if (table2.index.isEmpty()) {
+            for (Comparable[] tuple : table2.tuples) {
+                KeyType key = new KeyType(table2.extract(tuple, u_attrs));
+                table2.index.put(key, tuple);
+            }
+        }
+    
+        // Perform join using indexed lookup
+        for (Comparable[] tuple1 : tuples) {
+            KeyType key1 = new KeyType(extract(tuple1, t_attrs));
+            Comparable[] matchingTuple = table2.index.get(key1);
+    
+            if (matchingTuple != null) {
+                Comparable[] joinedTuple = ArrayUtil.concat(tuple1, matchingTuple);
+                rows.add(joinedTuple);
+            }
+        }
+    
+        // Merge attribute names and domains for the new joined table
+        String[] newAttributes = ArrayUtil.concat(attribute, table2.attribute);
+        Class[] newDomains = ArrayUtil.concat(domain, table2.domain);
+    
+        return new Table(name + count++, newAttributes, newDomains, key, rows);
     }
+    
 
     /************************************************************************************
      * Join this table and table2 by performing an "equi-join".  Tuples from both tables
