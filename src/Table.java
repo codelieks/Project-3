@@ -1,4 +1,4 @@
-
+package src;
 /****************************************************************************************
  * @file  Table.java
  *
@@ -12,6 +12,7 @@ import java.util.stream.*;
 
 import static java.lang.Boolean.*;
 import static java.lang.System.out;
+
 
 /****************************************************************************************
  * This class implements relational database tables (including attribute names, domains
@@ -47,10 +48,12 @@ public class Table
      *  real types: Double, Float
      *  string types: Character, String
      */
+    @SuppressWarnings("rawtypes")
     private final Class [] domain;
 
     /** Collection of tuples (data storage).
      */
+    @SuppressWarnings("rawtypes")
     private final List <Comparable []> tuples;
 
     /** Primary key. 

@@ -1,3 +1,4 @@
+package src;
 
 /************************************************************************************
  * @file LinHashMap.java
@@ -125,12 +126,12 @@ public class LinHashMap <K, V>
     public Set <Map.Entry <K, V>> entrySet ()
     {
         var enSet = new HashSet <Map.Entry <K, V>> ();
-        //Current.nkeys is amount of data per bucket 
+        //Current.nkeys is amount of vals per bucket 
         for (Bucket bucket: hTable) {
             Bucket currentBucket = bucket;
             while (currentBucket != null) {
-                for (int j = 0; j < currentBucket.nKeys; j++) {
-                    enSet.add(new AbstractMap.SimpleEntry<>(currentBucket.key[j], currentBucket.value[j]));
+                for (int i = 0; i < currentBucket.nKeys; i++) {
+                    enSet.add(new AbstractMap.SimpleEntry<>(currentBucket.key[i], currentBucket.value[i]));
                 }
                 currentBucket = currentBucket.next; 
             }
