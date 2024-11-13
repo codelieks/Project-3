@@ -125,9 +125,16 @@ public class LinHashMap <K, V>
     public Set <Map.Entry <K, V>> entrySet ()
     {
         var enSet = new HashSet <Map.Entry <K, V>> ();
-
-        //  T O   B E   I M P L E M E N T E D
-            
+        //Current.nkeys is amount of data per bucket 
+        for (Bucket bucket: hTable) {
+            Bucket currentBucket = bucket;
+            while (currentBucket != null) {
+                for (int j = 0; j < currentBucket.nKeys; j++) {
+                    enSet.add(new AbstractMap.SimpleEntry<>(currentBucket.key[j], currentBucket.value[j]));
+                }
+                currentBucket = currentBucket.next; 
+            }
+        }  
         return enSet;
     } // entrySet
 
