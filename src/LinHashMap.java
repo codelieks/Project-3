@@ -125,17 +125,26 @@ public class LinHashMap <K, V>
      */
     public Set <Map.Entry <K, V>> entrySet ()
     {
-        var enSet = new HashSet <Map.Entry <K, V>> ();
-        //Current.nkeys is amount of vals per bucket 
-        for (Bucket bucket: hTable) {
+        Set<Map.Entry<K, V>> enSet = new HashSet<>();
+    
+        // Iterate over each bucket in the hashtable
+        for (Bucket bucket : hTable) {
             Bucket currentBucket = bucket;
+            
+            // Traverse the linked list of buckets if there are multiple collisions
             while (currentBucket != null) {
+                // Iterate over the keys in the current bucket and add entries to the set
                 for (int i = 0; i < currentBucket.nKeys; i++) {
-                    enSet.add(new AbstractMap.SimpleEntry<>(currentBucket.key[i], currentBucket.value[i]));
+                    if (currentBucket.key[i] != null) {  // Check for non-null keys (safety check)
+                        enSet.add(new AbstractMap.SimpleEntry<>(currentBucket.key[i], currentBucket.value[i]));
+                    }
                 }
-                currentBucket = currentBucket.next; 
+                
+                // Move to the next linked bucket (if any)
+                currentBucket = currentBucket.next;
             }
-        }  
+        }
+    
         return enSet;
     } // entrySet
 
@@ -223,11 +232,56 @@ public class LinHashMap <K, V>
      */
     private void split ()
     {
-        out.println ("split: bucket chain " + isplit);
+        out.println("split: bucket chain " + isplit);
 
-        //  T O   B E   I M P L E M E N T E D
+        // Create a new bucket at the end of the hash table
+        hTable.add(new Bucket());
 
-    } // split
+        // Redistribute keys from the current bucket chain (including chained buckets)
+        Bucket currentBucket = hTable.get(isplit);
+        Bucket newBucket = hTable.get(hTable.size() - 1);
+
+        while (currentBucket != null) {
+            // Store original keys count for this bucket
+            int originalKeys = currentBucket.nKeys;
+            
+            // Process all keys in current bucket
+            for (int i = 0; i < originalKeys; i++) {
+                K key = currentBucket.key[i];
+                V value = currentBucket.value[i];
+                
+                // Remove the key-value pair from the current bucket
+                currentBucket.key[i] = null;
+                currentBucket.value[i] = null;
+                currentBucket.nKeys--;
+                
+                // Determine the correct bucket based on h2
+                int newIndex = h2(key);
+                
+                // Put the key-value pair in the appropriate bucket
+                if (newIndex == isplit) {
+                    // Key stays in original bucket chain
+                    put(key, value);
+                } else {
+                    // Key goes to the new bucket
+                    newBucket.add(key, value);
+                }
+            }
+            
+            // Move to next bucket in chain
+            Bucket nextBucket = currentBucket.next;
+            currentBucket.next = null;  // Unlink the bucket
+            currentBucket = nextBucket;
+        }
+
+        // Increment split pointer and adjust table size if necessary
+        isplit++;
+        if (isplit == mod1) {
+            isplit = 0;
+            mod1 *= 2;
+            mod2 = 2 * mod1;
+        }
+    } //spit 
 
     /********************************************************************************
      * Return the load factor for the hash table.
