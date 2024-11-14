@@ -11,5 +11,3 @@ javac -d bin src/KeyType.java  # Fixed typo in KeyType
 javac -d bin src/LinHashMap.java  # Fixed typo in LinHashMap
 javac -d bin src/Table.java
 
-# Run with both src and test in classpath
-java -cp bin:src:test TestTupleGenerator
