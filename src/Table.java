@@ -175,7 +175,7 @@ public class Table
      */
     public Table noIndexSelect(KeyType keyVal) {
         ArrayList<Integer> keyIndexes = new ArrayList<Integer>();
-        HashSet keyNames = new HashSet(Arrays.asList(key));
+        HashSet<String> keyNames = new HashSet<>(Arrays.asList(key));
         for(int i = 0; i < attribute.length; i++){
             if(keyNames.contains(attribute[i])){
                 keyIndexes.add(i);
@@ -653,6 +653,7 @@ public class Table
 
         return obj;
     } // extractDom
+
 
 } // Table class
 

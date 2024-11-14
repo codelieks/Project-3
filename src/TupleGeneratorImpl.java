@@ -259,7 +259,22 @@ package src;
  
          return tempResult;
      } // generate
- 
+
+      // Method to get attribute names of a given table
+    public String[] getAttributeNames(String tableName) {
+        return tableAttr.get(tableName);
+    }
+
+    // Method to get domains (data types) of attributes for a specified table
+    public String[] getDomains(String tableName) {
+        return tableDomain.get(tableName);
+    }
+
+    // Method to get primary key attributes for a specified table
+    public String[] getKeyAttributes(String tableName) {
+        return tablepks.get(tableName);
+    }
+
  } // TestGeneratorImpl class
  
  
