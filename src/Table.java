@@ -62,7 +62,7 @@ public class Table
 
     /** Index into tuples (maps key to tuple number).
      */
-    private final Map <KeyType, Comparable []> index;
+    private Map <KeyType, Comparable []> index;
 
     //----------------------------------------------------------------------------------
     // Constructors
@@ -434,7 +434,7 @@ public class Table
      */
     public boolean insert (Comparable [] tup)
     {
-        out.println ("DML> insert into " + name + " values ( " + Arrays.toString (tup) + " )");
+   //     out.println ("DML> insert into " + name + " values ( " + Arrays.toString (tup) + " )");
 
         if (typeCheck (tup)) {
             tuples.add (tup);
@@ -654,6 +654,28 @@ public class Table
         return obj;
     } // extractDom
 
+    public void setIndexType(String indexType) {
+        switch (indexType) {
+            case "NoIndex":
+                this.index = null;
+                break;
+            case "TreeMap":
+                this.index = new TreeMap<>();
+                break;
+            case "HashMap":
+                this.index = new HashMap<>();
+                break;
+            case "LinHashMap":
+                this.index = new LinkedHashMap<>();
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported index type: " + indexType);
+        }
+    }
+    
+    }
+    
+    
 
-} // Table class
+ // Table class
 
